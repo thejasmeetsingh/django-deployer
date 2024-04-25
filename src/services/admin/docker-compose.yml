@@ -1,0 +1,33 @@
+services:
+  admin-db:
+    container_name: admin_db
+    restart: always
+    image: postgres:16.1-alpine3.18
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - POSTGRES_DB=$DB_NAME
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $DB_NAME -U $DB_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  admin-app:
+    build: .
+    container_name: admin_app
+    command: sh -c "python manage.py migrate && gunicorn main.asgi:application"
+    volumes:
+      - .:/code
+    ports:
+      - $PORT:$PORT
+    depends_on:
+      admin-db:
+        condition: service_healthy
+    env_file:
+      - .env
+
+volumes:
+  postgres-db:
