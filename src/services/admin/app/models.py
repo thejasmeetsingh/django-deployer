@@ -23,7 +23,8 @@ class DeploymentPlan(models.Model):
     plan = models.CharField(
         max_length=5,
         choices=PlanType.get_values(),
-        unique=True
+        unique=True,
+        error_messages={'unique': 'Plan already exists'}
     )
     instance_tier = models.CharField(
         max_length=10,
@@ -36,3 +37,6 @@ class DeploymentPlan(models.Model):
 
     class Meta:
         ordering = ('-modified_at',)
+
+    def __str__(self):
+        return f'{self.get_plan_display()}: {self.get_instance_tier_display()}.{self.instance_type}'

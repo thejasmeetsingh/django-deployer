@@ -172,3 +172,6 @@ logging.config.dictConfig({
         "django.server": DEFAULT_LOGGING["loggers"]["django.server"],
     },
 })
+
+# CSRF Origins
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
