@@ -14,6 +14,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - internal
 
   admin-app:
     build: .
@@ -21,13 +23,20 @@ services:
     command: sh -c "python manage.py migrate && gunicorn main.asgi:application"
     volumes:
       - .:/code
-    ports:
-      - $PORT:$PORT
     depends_on:
       admin-db:
         condition: service_healthy
     env_file:
       - .env
+    networks:
+      - internal
+      - shared-network
 
 volumes:
   postgres-db:
+
+networks:
+  internal:
+    driver: bridge
+  shared-network:
+    external: true
