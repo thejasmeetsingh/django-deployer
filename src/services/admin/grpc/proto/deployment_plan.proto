@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+service DeploymentPlan {
+    rpc GetDeploymentPlans(DeploymentPlanRequest) returns (stream DeploymentPlanResponse);
+}
+
+message DeploymentPlanRequest {
+    string token = 1;
+}
+
+message DeploymentPlanResponse {
+    string plan = 1;
+    string instance_tier = 2;
+    string instance_type = 3;
+}
