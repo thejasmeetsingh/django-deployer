@@ -1,9 +1,12 @@
-import os
+"""
+Gunicorn Config
+"""
+
 import multiprocessing
 
-PORT = os.getenv("PORT", "8000")
+import env
 
-bind = f"0.0.0.0:{PORT}"
+bind = f"0.0.0.0:{env.PORT}"
 worker_class = "uvicorn.workers.UvicornWorker"
 workers = multiprocessing.cpu_count() * 2
 accesslog = "-"

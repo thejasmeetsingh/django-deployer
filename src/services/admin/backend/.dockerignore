@@ -1,0 +1,12 @@
+*.log
+*.pot
+*.pyc
+static/
+venv/
+node_modules/
+__pycache__/
+.env
+.gitignore
+.idea/
+.vscode/
+.git/

@@ -17,6 +17,8 @@ class BaseModel(Base):
     created_at = sa.Column(sa.DateTime)
     modified_at = sa.Column(sa.DateTime)
 
+    __abstract__ = True
+
 
 class Instance(BaseModel):
     """
