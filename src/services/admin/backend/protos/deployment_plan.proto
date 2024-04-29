@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package DeploymentPlan;
+package deployment_plan;
 
 service DeploymentPlanService {
     rpc GetDeploymentPlans(DeploymentPlanRequest) returns (stream DeploymentPlanResponse);

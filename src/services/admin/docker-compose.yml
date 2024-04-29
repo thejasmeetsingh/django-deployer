@@ -17,12 +17,17 @@ services:
     networks:
       - internal
 
-  admin-app:
+  admin-backend:
     build: .
-    container_name: admin_app
-    command: sh -c "python manage.py migrate && gunicorn main.asgi:application"
+    container_name: admin_backend
+    command: sh -c "gunicorn main:app"
     volumes:
       - .:/code
+    healthcheck:
+      test: ["CMD-SHELL", "curl", "--fail http://admin_backend/health-check/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     depends_on:
       admin-db:
         condition: service_healthy
@@ -31,6 +36,20 @@ services:
     networks:
       - internal
       - shared-network
+
+  admin-frontend:
+    build: frontend/Dockerfile
+    container_name: admin_frontend
+    command: sh -c "npm run dev"
+    env_file:
+      - .env
+    ports:
+      - $PORT:$PORT
+    volumes:
+      - frontend:/usr/app
+    networks:
+      - internal
+
 
 volumes:
   postgres-db:

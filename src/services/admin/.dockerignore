@@ -3,6 +3,7 @@
 *.pyc
 static/
 venv/
+node_modules/
 __pycache__/
 .env
 .gitignore
