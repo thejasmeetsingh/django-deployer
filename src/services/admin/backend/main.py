@@ -29,6 +29,6 @@ class HealthCheck(BaseModel):
     message: str
 
 
-@app.get("/health-check/", status_code=status.HTTP_200_OK, response_class=HealthCheck)
+@app.get("/health-check/", status_code=status.HTTP_200_OK, response_model=HealthCheck)
 async def health_check():
     return HealthCheck(message="Admin backend is up & running!")

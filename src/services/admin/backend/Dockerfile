@@ -1,6 +1,6 @@
 FROM python:3.11-alpine
 
-RUN apk add --no-cache build-base postgresql-dev
+RUN apk add --no-cache build-base libffi-dev postgresql-dev
 RUN pip install --upgrade pip
 
 ENV PYTHONUNBUFFERED 1
