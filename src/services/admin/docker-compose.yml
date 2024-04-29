@@ -18,16 +18,11 @@ services:
       - internal
 
   admin-backend:
-    build: .
+    build: backend/.
     container_name: admin_backend
     command: sh -c "gunicorn main:app"
     volumes:
-      - .:/code
-    healthcheck:
-      test: ["CMD-SHELL", "curl", "--fail http://admin_backend/health-check/ || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - ./backend:/code
     depends_on:
       admin-db:
         condition: service_healthy
@@ -36,20 +31,6 @@ services:
     networks:
       - internal
       - shared-network
-
-  admin-frontend:
-    build: frontend/Dockerfile
-    container_name: admin_frontend
-    command: sh -c "npm run dev"
-    env_file:
-      - .env
-    ports:
-      - $PORT:$PORT
-    volumes:
-      - frontend:/usr/app
-    networks:
-      - internal
-
 
 volumes:
   postgres-db:
