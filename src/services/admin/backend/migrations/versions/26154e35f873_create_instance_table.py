@@ -22,6 +22,9 @@ def upgrade() -> None:
     op.create_table(
         "instances",
         sa.Column("id", sa.UUID, primary_key=True, index=True),
+        sa.Column("created_at", sa.DateTime),
+        sa.Column("modified_at", sa.DateTime),
+
         sa.Column("type", sa.String(50), nullable=False, unique=True)
     )
 

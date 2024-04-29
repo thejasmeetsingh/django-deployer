@@ -22,6 +22,9 @@ def upgrade() -> None:
     op.create_table(
         "plans",
         sa.Column("id", sa.UUID, primary_key=True, index=True),
+        sa.Column("created_at", sa.DateTime),
+        sa.Column("modified_at", sa.DateTime),
+
         sa.Column("name", sa.String(5), unique=True, nullable=False),
         sa.Column("instance_id", sa.UUID, sa.ForeignKey(
             "instances.id"), nullable=False)
