@@ -1,20 +1,8 @@
 import datetime
 
 import jwt
-import bcrypt
 
 import env
-
-
-def check_password(raw_password: str, hashed_password: str) -> bool:
-    """
-    Match the raw password with hashed password
-    """
-
-    return bcrypt.checkpw(
-        raw_password.encode('utf-8'),
-        hashed_password.encode('utf-8')
-    )
 
 
 def generate_token(payload: dict, exp: datetime.timedelta) -> str:
@@ -35,7 +23,7 @@ def get_auth_tokens(payload: dict[str, str]) -> dict[str, str]:
     }
 
 
-def get_jwt_payload(token: str) -> dict | None:
+def get_jwt_payload(token: str) -> dict[str, str] | None:
     try:
         return jwt.decode(jwt=token, key=env.SECRET_KEY,
                           algorithms=["HS256"])
