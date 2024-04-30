@@ -24,7 +24,7 @@ class InstanceRequest(BaseModel):
 
 class InstanceResponse(BaseModel):
     message: str
-    data: Instance
+    data: Instance | None
 
 
 class InstanceListResponse(BaseModel):
