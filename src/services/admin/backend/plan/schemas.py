@@ -4,18 +4,7 @@ Pydantic Schemas for data validation and DB models type annotations
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field, UUID4
-
-
-class Instance(BaseModel):
-    id: UUID4
-    created_at: datetime
-    modified_at: datetime
-
-    type: str
-
-    class Config:
-        from_attributes = True
+from pydantic import BaseModel, UUID4, Field
 
 
 class Plan(BaseModel):
@@ -27,19 +16,6 @@ class Plan(BaseModel):
 
     class Config:
         from_attributes = True
-
-
-class InstanceRequest(BaseModel):
-    type: str = Field(max_length=50)
-
-
-class InstanceResponse(BaseModel):
-    message: str
-    data: Instance
-
-
-class InstanceListResponse(BaseModel):
-    results: list[Instance]
 
 
 class PlanCreateRequest(BaseModel):

@@ -6,7 +6,8 @@ from fastapi import FastAPI, status
 from pydantic import BaseModel
 
 from auth import routes as auth_routes
-from app import routes as app_routes
+from instance import routes as instance_routes
+from plan import routes as plan_routes
 
 
 def get_app() -> FastAPI:
@@ -18,7 +19,8 @@ def get_app() -> FastAPI:
     prefix = "/api/v1"
 
     _app.include_router(auth_routes.router, prefix=prefix)
-    _app.include_router(app_routes.router, prefix=prefix)
+    _app.include_router(instance_routes.router, prefix=prefix)
+    _app.include_router(plan_routes.router, prefix=prefix)
 
     return _app
 
