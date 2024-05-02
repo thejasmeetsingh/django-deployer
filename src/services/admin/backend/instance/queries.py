@@ -46,5 +46,5 @@ def delete_instance(db: Session, instance_id: uuid.UUID) -> None:
     db.commit()
 
 
-def get_instances(db: Session) -> list[Instance]:
-    return paginate(db, select(Instance.id, Instance.type).order_by(Instance.created_at.desc()))
+def get_instances(db: Session, search: str) -> list[Instance]:
+    return paginate(db, select(Instance.id, Instance.type).where(Instance.type.like(f"%{search}%")).order_by(Instance.created_at.desc()))

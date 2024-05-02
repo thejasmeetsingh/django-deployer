@@ -23,8 +23,8 @@ logger = get_logger(__name__)
 
 
 @router.get(path="/instance/", response_model=Page[InstanceListResponse], status_code=status.HTTP_200_OK)
-async def get_instances(db: Annotated[Session, Depends(get_db)], _: Annotated[Session, Depends(get_user)]) -> Page[InstanceListResponse]:
-    return get_instances_db(db)
+async def get_instances(db: Annotated[Session, Depends(get_db)], _: Annotated[Session, Depends(get_user)], search: str = "") -> Page[InstanceListResponse]:
+    return get_instances_db(db, search)
 
 
 @router.post(path="/instance/", response_model=InstanceResponse, status_code=status.HTTP_201_CREATED)
