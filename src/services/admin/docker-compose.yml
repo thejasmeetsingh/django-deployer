@@ -18,7 +18,7 @@ services:
   admin-backend:
     build: backend/.
     container_name: admin_backend
-    command: sh -c "gunicorn main:app"
+    command: sh -c "alembic upgrade head && gunicorn main:app"
     volumes:
       - ./backend:/code
     depends_on:

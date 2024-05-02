@@ -2,10 +2,20 @@
 Contains models representing Plan related DB tables
 """
 
+import uuid
+from enum import Enum
+from datetime import datetime
+
 import sqlalchemy as sa
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
+
+class PlanType(Enum):
+    LOW = "L"
+    MEDIUM = "M"
+    HIGH = "H"
 
 
 class Plan(Base):
@@ -16,14 +26,17 @@ class Plan(Base):
     H -> High Spec
     """
 
-    id = sa.Column(sa.UUID, primary_key=True, index=True)
-    created_at = sa.Column(sa.DateTime)
-    modified_at = sa.Column(sa.DateTime)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(nullable=False)
+    modified_at: Mapped[datetime] = mapped_column(nullable=False)
 
-    name = sa.Column(sa.Enum("B", "S", "P"), unique=True)
-    instance_id = sa.Column(sa.UUID, sa.ForeignKey("instances.id"))
+    name: Mapped[PlanType] = mapped_column(unique=True, nullable=False)
+    instance_id: Mapped[uuid.UUID] = mapped_column(
+        sa.ForeignKey("instances.id"),
+        nullable=False
+    )
 
-    instance = relationship("Instance", back_populates="plan")
+    instance: Mapped["Instance"] = relationship(back_populates="plan")
 
     __tablename__ = "plans"
 
