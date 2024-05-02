@@ -2,8 +2,10 @@
 Contains models representing Instance related DB tables
 """
 
-import sqlalchemy as sa
-from sqlalchemy.orm import relationship
+import uuid
+from datetime import datetime
+
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
@@ -13,11 +15,11 @@ class Instance(Base):
     Allow admin to add instance type like: t2.micro, t3a.medium etc.
     """
 
-    id = sa.Column(sa.UUID, primary_key=True, index=True)
-    created_at = sa.Column(sa.DateTime)
-    modified_at = sa.Column(sa.DateTime)
+    Mapped[uuid.UUID] = mapped_column(primary_key=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(nullable=False)
+    modified_at: Mapped[datetime] = mapped_column(nullable=False)
 
-    type = sa.Column(sa.String)
+    type: Mapped[str] = mapped_column(nullable=False)
 
     plan = relationship("Plan", back_populates="instance")
 
