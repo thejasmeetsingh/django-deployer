@@ -4,6 +4,7 @@ Backend Application Main EntryPoint
 
 from fastapi import FastAPI, status
 from pydantic import BaseModel
+from fastapi_pagination import add_pagination
 
 from auth import routes as auth_routes
 from instance import routes as instance_routes
@@ -26,9 +27,11 @@ def get_app() -> FastAPI:
 
 
 app = get_app()
-
+add_pagination(app)
 
 # Health Check Route
+
+
 class HealthCheck(BaseModel):
     message: str
 

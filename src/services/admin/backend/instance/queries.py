@@ -3,6 +3,7 @@ import datetime
 
 from sqlalchemy import update, delete, select
 from sqlalchemy.orm import Session
+from fastapi_pagination.ext.sqlalchemy import paginate
 
 from .models import Instance
 from .schemas import InstanceRequest
@@ -46,4 +47,4 @@ def delete_instance(db: Session, instance_id: uuid.UUID) -> None:
 
 
 def get_instances(db: Session) -> list[Instance]:
-    return db.scalars(select(Instance)).all()
+    return paginate(db, select(Instance.id, Instance.type).order_by(Instance.created_at.desc()))

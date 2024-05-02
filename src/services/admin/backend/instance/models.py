@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 
 import sqlalchemy as sa
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from database import Base
 
@@ -20,11 +20,10 @@ class Instance(Base):
     created_at: Mapped[datetime] = mapped_column(nullable=False)
     modified_at: Mapped[datetime] = mapped_column(nullable=False)
 
-    type: Mapped[str] = mapped_column(sa.String(5), nullable=False)
-
-    plans: Mapped[list["Plan"]] = relationship(
-        back_populates="instance",
-        cascade="all, delete-orphan"
+    type: Mapped[str] = mapped_column(
+        sa.String(50),
+        unique=True,
+        nullable=False
     )
 
     __tablename__ = "instances"

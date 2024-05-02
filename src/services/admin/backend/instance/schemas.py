@@ -28,4 +28,5 @@ class InstanceResponse(BaseModel):
 
 
 class InstanceListResponse(BaseModel):
-    results: list[Instance]
+    id: UUID4
+    type: str
