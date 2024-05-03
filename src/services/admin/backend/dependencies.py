@@ -4,12 +4,12 @@ from database import SessionLocal
 from auth.utils import get_jwt_payload
 
 
-async def get_db():
-    db = SessionLocal()
+async def get_db_session():
+    db_session = SessionLocal()
     try:
-        yield db
+        yield db_session
     finally:
-        db.close()
+        await db_session.close()
 
 
 async def get_user(request: Request) -> str:

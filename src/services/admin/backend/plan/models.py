@@ -7,7 +7,7 @@ from enum import Enum
 from datetime import datetime
 
 import sqlalchemy as sa
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
@@ -35,6 +35,8 @@ class Plan(Base):
         sa.ForeignKey("instances.id"),
         nullable=False
     )
+
+    instance: Mapped["Instance"] = relationship(back_populates="plans")
 
     __tablename__ = "plans"
 

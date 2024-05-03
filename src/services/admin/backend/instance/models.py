@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 
 import sqlalchemy as sa
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
@@ -25,6 +25,9 @@ class Instance(Base):
         unique=True,
         nullable=False
     )
+
+    plans: Mapped[list["Plan"]] = relationship(
+        back_populates="instance", cascade="all, delete")
 
     __tablename__ = "instances"
 

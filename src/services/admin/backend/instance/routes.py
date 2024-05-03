@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination import Page
 
-from dependencies import get_db, get_user
+from dependencies import get_db_session, get_user
 from logger import get_logger
 from .schemas import InstanceRequest, InstanceResponse, InstanceListResponse
 from .queries import (
@@ -23,12 +23,12 @@ logger = get_logger(__name__)
 
 
 @router.get(path="/instance/", response_model=Page[InstanceListResponse], status_code=status.HTTP_200_OK)
-async def get_instances(db: Annotated[Session, Depends(get_db)], _: Annotated[Session, Depends(get_user)], search: str = "") -> Page[InstanceListResponse]:
+async def get_instances(db: Annotated[Session, Depends(get_db_session)], _: Annotated[Session, Depends(get_user)], search: str = "") -> Page[InstanceListResponse]:
     return get_instances_db(db, search)
 
 
 @router.post(path="/instance/", response_model=InstanceResponse, status_code=status.HTTP_201_CREATED)
-async def add_instance(instance_request: InstanceRequest, db: Annotated[Session, Depends(get_db)], _: Annotated[Session, Depends(get_user)]):
+async def add_instance(instance_request: InstanceRequest, db: Annotated[Session, Depends(get_db_session)], _: Annotated[Session, Depends(get_user)]):
     try:
         instance = create_instance(db, instance_request)
         return InstanceResponse(message="Instance added successfully", data=instance)
@@ -48,7 +48,7 @@ async def add_instance(instance_request: InstanceRequest, db: Annotated[Session,
 
 
 @router.get(path="/instance/{instance_id}/", response_model=InstanceResponse, status_code=status.HTTP_200_OK)
-async def get_instance_detail(instance_id: uuid.UUID, db: Annotated[Session, Depends(get_db)], _: Annotated[Session, Depends(get_user)]):
+async def get_instance_detail(instance_id: uuid.UUID, db: Annotated[Session, Depends(get_db_session)], _: Annotated[Session, Depends(get_user)]):
     try:
         instance = get_instance_by_id(db, instance_id)
         if not instance:
@@ -66,7 +66,7 @@ async def get_instance_detail(instance_id: uuid.UUID, db: Annotated[Session, Dep
 
 
 @router.patch(path="/instance/{instance_id}/", response_model=InstanceResponse, status_code=status.HTTP_200_OK)
-async def update_instance(instance_id: uuid.UUID, instance_request: InstanceRequest, db: Annotated[Session, Depends(get_db)], _: Annotated[Session, Depends(get_user)]):
+async def update_instance(instance_id: uuid.UUID, instance_request: InstanceRequest, db: Annotated[Session, Depends(get_db_session)], _: Annotated[Session, Depends(get_user)]):
     try:
         instance = update_instance_db(db, instance_id, instance_request)
         return InstanceResponse(message="Instance detail updated successfully", data=instance)
@@ -85,7 +85,7 @@ async def update_instance(instance_id: uuid.UUID, instance_request: InstanceRequ
 
 
 @router.delete(path="/instance/{instance_id}/", response_model=InstanceResponse, status_code=status.HTTP_200_OK)
-async def delete_instance(instance_id: uuid.UUID, db: Annotated[Session, Depends(get_db)], _: Annotated[Session, Depends(get_user)]):
+async def delete_instance(instance_id: uuid.UUID, db: Annotated[Session, Depends(get_db_session)], _: Annotated[Session, Depends(get_user)]):
     try:
         delete_instance_db(db, instance_id)
         return InstanceResponse(message="Instance deleted successfully", data=None)
