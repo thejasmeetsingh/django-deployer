@@ -1,9 +1,10 @@
 import uuid
 
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi_pagination.ext.sqlalchemy import paginate
 
+from plan.queries import delete_plans_by_instance_id
 from .models import Instance
 from .schemas import InstanceRequest
 
@@ -37,9 +38,11 @@ async def update_instance(session: AsyncSession, instance_id: uuid.UUID, instanc
 
 
 async def delete_instance(session: AsyncSession, instance_id: uuid.UUID) -> None:
-    _instance = await get_instance_by_id(session, instance_id)
-    await session.delete(_instance)
+    await session.execute(delete(Instance).where(Instance.id == instance_id))
     await session.commit()
+
+    # Delete related plan objects
+    await delete_plans_by_instance_id(session, instance_id)
 
 
 async def get_instances(session: AsyncSession, search: str) -> list[Instance]:

@@ -6,31 +6,40 @@ from datetime import datetime
 
 from pydantic import BaseModel, UUID4, Field
 
+from instance.schemas import Instance
+from .models import PlanType
+
 
 class Plan(BaseModel):
     id: UUID4
     created_at: datetime
     modified_at: datetime
+    instance: Instance
 
-    name: str
+    name: PlanType
 
     class Config:
         from_attributes = True
 
 
 class PlanCreateRequest(BaseModel):
-    name: str = Field(max_length=5)
+    name: PlanType
     instance_id: UUID4
 
 
 class PlanUpdateRequest(BaseModel):
-    name: str = Field(max_length=5)
+    name: PlanType | None
+    instance_id: UUID4 | None
 
 
 class PlanResponse(BaseModel):
     message: str
-    data: Plan
+    data: Plan | None
+
+
+class PlanList(BaseModel):
+    name: PlanType
 
 
 class PlanListResponse(BaseModel):
-    results: list[Plan]
+    results: list[PlanList]
