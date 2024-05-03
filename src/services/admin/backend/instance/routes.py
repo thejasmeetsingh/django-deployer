@@ -3,7 +3,7 @@ import traceback
 from typing import Annotated
 
 from sqlalchemy import exc
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination import Page
 
@@ -23,14 +23,14 @@ logger = get_logger(__name__)
 
 
 @router.get(path="/instance/", response_model=Page[InstanceListResponse], status_code=status.HTTP_200_OK)
-async def get_instances(db: Annotated[Session, Depends(get_db_session)], _: Annotated[Session, Depends(get_user)], search: str = "") -> Page[InstanceListResponse]:
-    return get_instances_db(db, search)
+async def get_instances(session: Annotated[AsyncSession, Depends(get_db_session)], _: Annotated[str, Depends(get_user)], search: str = "") -> Page[InstanceListResponse]:
+    return await get_instances_db(session, search)
 
 
 @router.post(path="/instance/", response_model=InstanceResponse, status_code=status.HTTP_201_CREATED)
-async def add_instance(instance_request: InstanceRequest, db: Annotated[Session, Depends(get_db_session)], _: Annotated[Session, Depends(get_user)]):
+async def add_instance(instance_request: InstanceRequest, session: Annotated[AsyncSession, Depends(get_db_session)], _: Annotated[str, Depends(get_user)]):
     try:
-        instance = create_instance(db, instance_request)
+        instance = await create_instance(session, instance_request)
         return InstanceResponse(message="Instance added successfully", data=instance)
 
     except exc.IntegrityError as e:
@@ -48,9 +48,9 @@ async def add_instance(instance_request: InstanceRequest, db: Annotated[Session,
 
 
 @router.get(path="/instance/{instance_id}/", response_model=InstanceResponse, status_code=status.HTTP_200_OK)
-async def get_instance_detail(instance_id: uuid.UUID, db: Annotated[Session, Depends(get_db_session)], _: Annotated[Session, Depends(get_user)]):
+async def get_instance_detail(instance_id: uuid.UUID, session: Annotated[AsyncSession, Depends(get_db_session)], _: Annotated[str, Depends(get_user)]):
     try:
-        instance = get_instance_by_id(db, instance_id)
+        instance = await get_instance_by_id(session, instance_id)
         if not instance:
             raise HTTPException(detail="Instance not found",
                                 status_code=status.HTTP_404_NOT_FOUND)
@@ -66,9 +66,9 @@ async def get_instance_detail(instance_id: uuid.UUID, db: Annotated[Session, Dep
 
 
 @router.patch(path="/instance/{instance_id}/", response_model=InstanceResponse, status_code=status.HTTP_200_OK)
-async def update_instance(instance_id: uuid.UUID, instance_request: InstanceRequest, db: Annotated[Session, Depends(get_db_session)], _: Annotated[Session, Depends(get_user)]):
+async def update_instance(instance_id: uuid.UUID, instance_request: InstanceRequest, session: Annotated[AsyncSession, Depends(get_db_session)], _: Annotated[str, Depends(get_user)]):
     try:
-        instance = update_instance_db(db, instance_id, instance_request)
+        instance = await update_instance_db(session, instance_id, instance_request)
         return InstanceResponse(message="Instance detail updated successfully", data=instance)
 
     except exc.IntegrityError as e:
@@ -85,9 +85,9 @@ async def update_instance(instance_id: uuid.UUID, instance_request: InstanceRequ
 
 
 @router.delete(path="/instance/{instance_id}/", response_model=InstanceResponse, status_code=status.HTTP_200_OK)
-async def delete_instance(instance_id: uuid.UUID, db: Annotated[Session, Depends(get_db_session)], _: Annotated[Session, Depends(get_user)]):
+async def delete_instance(instance_id: uuid.UUID, session: Annotated[AsyncSession, Depends(get_db_session)], _: Annotated[str, Depends(get_user)]):
     try:
-        delete_instance_db(db, instance_id)
+        await delete_instance_db(session, instance_id)
         return InstanceResponse(message="Instance deleted successfully", data=None)
     except exc.SQLAlchemyError as e:
         logger.error({

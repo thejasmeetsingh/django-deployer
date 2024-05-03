@@ -1,50 +1,46 @@
 import uuid
-import datetime
 
-from sqlalchemy import update, delete, select
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi_pagination.ext.sqlalchemy import paginate
 
 from .models import Instance
 from .schemas import InstanceRequest
 
 
-def get_instance_by_id(db: Session, instance_id: uuid.UUID) -> Instance:
-    return db.get(Instance, instance_id)
+async def get_instance_by_id(session: AsyncSession, instance_id: uuid.UUID) -> Instance:
+    _instance = await session.get(Instance, instance_id)
+    return _instance
 
 
-def create_instance(db: Session, instance: InstanceRequest) -> Instance:
+async def create_instance(session: AsyncSession, instance: InstanceRequest) -> Instance:
     _instance = Instance(
         id=uuid.uuid4(),
-        created_at=datetime.datetime.now(datetime.UTC),
-        modified_at=datetime.datetime.now(datetime.UTC),
         type=instance.type
     )
 
-    db.add(_instance)
-    db.commit()
+    session.add(_instance)
+    await session.commit()
 
     return _instance
 
 
-def update_instance(db: Session, instance_id: uuid.UUID, instance: InstanceRequest) -> Instance:
-    _instance = get_instance_by_id(db, instance_id)
+async def update_instance(session: AsyncSession, instance_id: uuid.UUID, instance: InstanceRequest) -> Instance:
+    _instance = await get_instance_by_id(session, instance_id)
 
-    db.execute(update(Instance).where(Instance.id == instance_id).values(
-        type=instance.type,
-        modified_at=datetime.datetime.now(datetime.UTC)
-    ))
+    _instance.type = instance.type
 
-    db.commit()
-    db.refresh(_instance)
+    await session.commit()
+    await session.refresh(_instance)
 
     return _instance
 
 
-def delete_instance(db: Session, instance_id: uuid.UUID) -> None:
-    db.execute(delete(Instance).where(Instance.id == instance_id))
-    db.commit()
+async def delete_instance(session: AsyncSession, instance_id: uuid.UUID) -> None:
+    _instance = await get_instance_by_id(session, instance_id)
+    await session.delete(_instance)
+    await session.commit()
 
 
-def get_instances(db: Session, search: str) -> list[Instance]:
-    return paginate(db, select(Instance.id, Instance.type).where(Instance.type.like(f"%{search}%")).order_by(Instance.created_at.desc()))
+async def get_instances(session: AsyncSession, search: str) -> list[Instance]:
+    return await paginate(session, select(Instance.id, Instance.type).where(Instance.type.like(f"%{search}%")).order_by(Instance.created_at.desc()))

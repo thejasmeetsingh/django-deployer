@@ -7,7 +7,7 @@ from enum import Enum
 from datetime import datetime
 
 import sqlalchemy as sa
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from database import Base
 
@@ -27,16 +27,16 @@ class Plan(Base):
     """
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, index=True)
-    created_at: Mapped[datetime] = mapped_column(nullable=False)
-    modified_at: Mapped[datetime] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        nullable=False, server_default=sa.func.now())
+    modified_at: Mapped[datetime] = mapped_column(
+        nullable=False, server_default=sa.func.now(), server_onupdate=sa.func.now())
 
     name: Mapped[PlanType] = mapped_column(unique=True, nullable=False)
     instance_id: Mapped[uuid.UUID] = mapped_column(
         sa.ForeignKey("instances.id"),
         nullable=False
     )
-
-    instance: Mapped["Instance"] = relationship(back_populates="plans")
 
     __tablename__ = "plans"
 

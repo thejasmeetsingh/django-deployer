@@ -8,6 +8,9 @@ async def get_db_session():
     db_session = SessionLocal()
     try:
         yield db_session
+    except Exception:
+        await db_session.rollback()
+        raise
     finally:
         await db_session.close()
 
