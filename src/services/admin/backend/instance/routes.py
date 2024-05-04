@@ -68,6 +68,11 @@ async def get_instance_detail(instance_id: uuid.UUID, session: Annotated[AsyncSe
 @router.patch(path="/instance/{instance_id}/", response_model=InstanceResponse, status_code=status.HTTP_200_OK)
 async def update_instance(instance_id: uuid.UUID, instance_request: InstanceRequest, session: Annotated[AsyncSession, Depends(get_db_session)], _: Annotated[str, Depends(get_user)]):
     try:
+        instance = await get_instance_by_id(session, instance_id)
+        if not instance:
+            raise HTTPException(detail="Instance not found",
+                                status_code=status.HTTP_404_NOT_FOUND)
+
         instance = await update_instance_db(session, instance_id, instance_request)
         return InstanceResponse(message="Instance detail updated successfully", data=instance)
 
@@ -87,6 +92,11 @@ async def update_instance(instance_id: uuid.UUID, instance_request: InstanceRequ
 @router.delete(path="/instance/{instance_id}/", response_model=InstanceResponse, status_code=status.HTTP_200_OK)
 async def delete_instance(instance_id: uuid.UUID, session: Annotated[AsyncSession, Depends(get_db_session)], _: Annotated[str, Depends(get_user)]):
     try:
+        instance = await get_instance_by_id(session, instance_id)
+        if not instance:
+            raise HTTPException(detail="Instance not found",
+                                status_code=status.HTTP_404_NOT_FOUND)
+
         await delete_instance_db(session, instance_id)
         return InstanceResponse(message="Instance deleted successfully", data=None)
     except exc.SQLAlchemyError as e:
