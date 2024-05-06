@@ -4,7 +4,7 @@ from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi_pagination.ext.sqlalchemy import paginate
 
-from .models import Plan
+from .models import Plan, PlanType
 from .schemas import PlanCreateRequest, PlanUpdateRequest
 
 
@@ -26,19 +26,17 @@ async def create_plan(session: AsyncSession, plan: PlanCreateRequest) -> Plan:
     return _plan
 
 
-async def update_plan(session: AsyncSession, plan_id: uuid.UUID, plan: PlanUpdateRequest) -> Plan:
-    _plan = await get_plan_by_id(session, plan_id)
+async def update_plan(session: AsyncSession, plan: Plan, plan_request: PlanUpdateRequest) -> Plan:
+    if plan_request.name:
+        plan.name = plan_request.name
 
-    if plan.name:
-        _plan.name = plan.name
-
-    if plan.instance_id:
-        _plan.instance_id = plan.instance_id
+    if plan_request.instance_id:
+        plan.instance_id = plan_request.instance_id
 
     await session.commit()
-    await session.refresh(_plan)
+    await session.refresh(plan)
 
-    return _plan
+    return plan
 
 
 async def delete_plan(session: AsyncSession, plan_id: uuid.UUID) -> None:
@@ -51,5 +49,8 @@ async def delete_plans_by_instance_id(session: AsyncSession, instance_id: uuid.U
     await session.commit()
 
 
-async def get_plans(session: AsyncSession, search: str) -> list[Plan]:
-    return await paginate(session, select(Plan.id, Plan.name).where(Plan.name.like(f"%{search}%")).order_by(Plan.created_at.desc()))
+async def get_plans(session: AsyncSession, plan_type: PlanType | None) -> list[Plan]:
+    query = select(Plan.id, Plan.name)
+    if plan_type:
+        query = query.filter_by(name=plan_type)
+    return await paginate(session, query.order_by(Plan.created_at.desc()))

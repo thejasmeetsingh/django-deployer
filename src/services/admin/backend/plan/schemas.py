@@ -3,6 +3,7 @@ Pydantic Schemas for data validation and DB models type annotations
 """
 
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, UUID4, Field
 
@@ -28,8 +29,8 @@ class PlanCreateRequest(BaseModel):
 
 
 class PlanUpdateRequest(BaseModel):
-    name: PlanType | None
-    instance_id: UUID4 | None
+    name: Optional[PlanType] = None
+    instance_id: Optional[UUID4] = None
 
 
 class PlanResponse(BaseModel):
@@ -37,9 +38,6 @@ class PlanResponse(BaseModel):
     data: Plan | None
 
 
-class PlanList(BaseModel):
-    name: PlanType
-
-
 class PlanListResponse(BaseModel):
-    results: list[PlanList]
+    id: UUID4
+    name: PlanType

@@ -38,11 +38,11 @@ async def update_instance(session: AsyncSession, instance_id: uuid.UUID, instanc
 
 
 async def delete_instance(session: AsyncSession, instance_id: uuid.UUID) -> None:
+    # Delete related plan objects first
+    await delete_plans_by_instance_id(session, instance_id)
+
     await session.execute(delete(Instance).where(Instance.id == instance_id))
     await session.commit()
-
-    # Delete related plan objects
-    await delete_plans_by_instance_id(session, instance_id)
 
 
 async def get_instances(session: AsyncSession, search: str) -> list[Instance]:
