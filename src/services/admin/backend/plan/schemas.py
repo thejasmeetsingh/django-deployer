@@ -5,7 +5,7 @@ Pydantic Schemas for data validation and DB models type annotations
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, UUID4, Field
+from pydantic import BaseModel, UUID4
 
 from instance.schemas import Instance
 from .models import PlanType

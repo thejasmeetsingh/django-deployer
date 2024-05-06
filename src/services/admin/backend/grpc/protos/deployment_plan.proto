@@ -12,6 +12,5 @@ message DeploymentPlanRequest {
 
 message DeploymentPlanResponse {
     string plan = 1;
-    string instance_tier = 2;
-    string instance_type = 3;
+    string instance_type = 2;
 }
