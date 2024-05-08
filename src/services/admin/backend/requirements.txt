@@ -8,8 +8,6 @@ click==8.1.7
 cryptography==42.0.5
 fastapi==0.110.2
 fastapi-pagination==0.12.24
-grpcio==1.63.0
-grpcio-tools==1.63.0
 gunicorn==22.0.0
 h11==0.14.0
 idna==3.7
