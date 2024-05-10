@@ -8,7 +8,7 @@ from typing import Optional
 from pydantic import BaseModel, UUID4
 
 from instance.schemas import Instance
-from .models import PlanType
+from plan.models import PlanType
 
 
 class Plan(BaseModel):

@@ -4,8 +4,9 @@ from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi_pagination.ext.sqlalchemy import paginate
 
-from .models import Plan, PlanType
-from .schemas import PlanCreateRequest, PlanUpdateRequest
+from instance.models import Instance
+from plan.models import Plan, PlanType
+from plan.schemas import PlanCreateRequest, PlanUpdateRequest
 
 
 async def get_plan_by_id(session: AsyncSession, plan_id: uuid.UUID) -> Plan:

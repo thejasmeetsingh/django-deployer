@@ -9,8 +9,8 @@ from fastapi_pagination import Page
 
 from dependencies import get_db_session, get_user
 from logger import get_logger
-from .schemas import InstanceRequest, InstanceResponse, InstanceListResponse
-from .queries import (
+from instance.schemas import InstanceRequest, InstanceResponse, InstanceListResponse
+from instance.queries import (
     get_instances as get_instances_db,
     get_instance_by_id,
     create_instance,

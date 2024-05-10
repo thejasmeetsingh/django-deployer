@@ -3,8 +3,8 @@ import json
 from fastapi import APIRouter, status
 
 import env
-from .schemas import LoginRequest, TokenResponse, Token, RefreshTokenRequest
-from .utils import get_auth_tokens, get_jwt_payload
+from auth.schemas import LoginRequest, TokenResponse, Token, RefreshTokenRequest
+from auth.utils import get_auth_tokens, get_jwt_payload
 
 router = APIRouter()
 

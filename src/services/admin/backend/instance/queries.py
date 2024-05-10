@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi_pagination.ext.sqlalchemy import paginate
 
 from plan.queries import delete_plans_by_instance_id
-from .models import Instance
-from .schemas import InstanceRequest
+from instance.models import Instance
+from instance.schemas import InstanceRequest
 
 
 async def get_instance_by_id(session: AsyncSession, instance_id: uuid.UUID) -> Instance:

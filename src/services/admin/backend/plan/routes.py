@@ -10,9 +10,9 @@ from sqlalchemy import exc
 from logger import get_logger
 from dependencies import get_db_session, get_user
 from instance.queries import get_instance_by_id
-from .models import PlanType
-from .schemas import PlanResponse, PlanListResponse, PlanCreateRequest, PlanUpdateRequest
-from .queries import (
+from plan.models import PlanType
+from plan.schemas import PlanResponse, PlanListResponse, PlanCreateRequest, PlanUpdateRequest
+from plan.queries import (
     get_plans as get_plans_db,
     get_plan_by_id,
     create_plan,
