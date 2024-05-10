@@ -2,6 +2,9 @@ create-network:
 	docker network create -d bridge shared-network
 
 start-services:
+	# RabbitMQ
+	docker run -d --name rmq_service -e RABBITMQ_DEFAULT_USER=queue_user -e RABBITMQ_DEFAULT_PASS=1234 --network=shared-network rabbitmq:3.13.2-alpine
+
 	# Admin App
 	docker-compose -f src/services/admin/docker-compose.yml up -d
 	
@@ -13,6 +16,10 @@ start-services:
 stop-services:
 	# Admin App
 	docker-compose -f src/services/admin/docker-compose.yml down
+
+	# RabbitMQ
+	docker container stop rmq_service
+	docker container rm rmq_service
 	
 	# API Gateway
 	docker container stop api_gateway

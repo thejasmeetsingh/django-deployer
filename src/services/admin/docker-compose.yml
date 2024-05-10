@@ -30,6 +30,21 @@ services:
       - internal
       - shared-network
 
+  admin-rmq:
+    build: backend/.
+    container_name: admin_rmq
+    command: sh -c "python3 message_queue.py"
+    volumes:
+      - ./backend:/code
+    depends_on:
+      admin-db:
+        condition: service_healthy
+    env_file:
+      - backend/.env
+    networks:
+      - internal
+      - shared-network
+
 volumes:
   postgres-db:
 
