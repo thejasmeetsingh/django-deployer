@@ -3,7 +3,8 @@ services:
     container_name: redis_service
     restart: always
     image: redis:7.2.3-alpine
-    command: sh -c "redis-server --user redis_db_user --requirepass 1234 --database users_db"
+    environment:
+      REDIS_ARGS: "--requirepass 1234 --user redis_db_user on >1234 ~* allcommands --user default off nopass nocommands"
     volumes:
       - redis-db:/data
     healthcheck:

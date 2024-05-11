@@ -1,4 +1,4 @@
-import aioredis
+import redis.asyncio as redis
 from fastapi import APIRouter
 
 import env
@@ -7,13 +7,13 @@ router = APIRouter()
 
 
 async def get_redis():
-    redis = await aioredis.from_url(
+    r = await redis.from_url(
         f"redis://{env.REDIS_HOST}",
         db=env.REDIS_DB_NAME,
         username=env.REDIS_USERNAME,
         password=env.REDIS_PASSWORD
     )
     try:
-        yield redis
+        yield r
     except Exception as _:
-        await redis.close()
+        await r.close()
