@@ -1,5 +1,7 @@
+aioredis==2.0.1
 annotated-types==0.6.0
 anyio==4.3.0
+async-timeout==4.0.3
 certifi==2024.2.2
 click==8.1.7
 dnspython==2.6.1

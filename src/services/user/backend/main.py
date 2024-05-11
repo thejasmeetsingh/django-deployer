@@ -1,6 +1,8 @@
 from fastapi import FastAPI, status
 from pydantic import BaseModel
 
+from app.routes import router
+
 
 def get_app() -> FastAPI:
     _app = FastAPI()
@@ -9,6 +11,8 @@ def get_app() -> FastAPI:
     _app.description = "User Backend"
 
     prefix = "/api/v1"
+
+    _app.include_router(router, prefix=prefix)
 
     return _app
 

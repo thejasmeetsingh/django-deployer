@@ -7,6 +7,9 @@ start-services:
 
 	# Admin App
 	docker-compose -f src/services/admin/docker-compose.yml up -d
+
+	# User App
+	docker-compose -f src/services/user/docker-compose.yml up -d
 	
 	# API Gateway
 	docker run --name api_gateway -d -p 8000:8000 \
@@ -16,6 +19,9 @@ start-services:
 stop-services:
 	# Admin App
 	docker-compose -f src/services/admin/docker-compose.yml down
+
+	# User App
+	docker-compose -f src/services/user/docker-compose.yml down
 
 	# RabbitMQ
 	docker container stop rmq_service
