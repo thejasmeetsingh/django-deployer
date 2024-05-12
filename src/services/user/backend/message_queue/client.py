@@ -65,4 +65,4 @@ async def get_plans(_redis: redis.Redis):
     global REDIS_CONN
     REDIS_CONN = _redis
 
-    fetch_plans()
+    await fetch_plans()
