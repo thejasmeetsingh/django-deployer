@@ -5,7 +5,7 @@ import redis.asyncio as redis
 from fastapi import FastAPI, Depends, status
 
 import env
-from schemas import HealthCheck, DeployRequest, DeployResponse
+from schemas import HealthCheck, DeployRequest, DeployResponse, PlanResponse
 
 
 app = FastAPI()
@@ -14,11 +14,12 @@ app.description = "User Service"
 
 
 async def get_redis():
-    r = await redis.from_url(
-        f"redis://{env.REDIS_HOST}",
-        db=env.REDIS_DB_NAME,
+    r = await redis.Redis(
+        host=env.REDIS_HOST,
         username=env.REDIS_USERNAME,
-        password=env.REDIS_PASSWORD
+        password=env.REDIS_PASSWORD,
+        db=env.REDIS_DB_NAME,
+        decode_responses=True
     )
     try:
         yield r
@@ -29,6 +30,11 @@ async def get_redis():
 @app.get("/health-check/", status_code=status.HTTP_200_OK, response_model=HealthCheck)
 async def health_check():
     return HealthCheck(message="User backend is up & running!")
+
+
+@app.get(path="/api/v1/plan/", response_model=list[PlanResponse], status_code=status.HTTP_200_OK)
+async def get_plans(_redis: Annotated[redis.Redis, Depends(get_redis)]):
+    pass
 
 
 @app.post(path="/api/v1/deploy/", response_model=DeployResponse, status_code=status.HTTP_200_OK)
