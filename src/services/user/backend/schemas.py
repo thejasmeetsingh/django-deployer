@@ -13,3 +13,8 @@ class HealthCheck(BaseModel):
 
 class DeployResponse(BaseModel):
     message: str
+
+
+class PlanResponse(BaseModel):
+    plan: str
+    instance: str
