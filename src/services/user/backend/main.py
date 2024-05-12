@@ -1,31 +1,46 @@
-from fastapi import FastAPI, status
-from pydantic import BaseModel
+import uuid
+from typing import Annotated
 
-from app.routes import router
+import redis.asyncio as redis
+from fastapi import FastAPI, Depends, status
 
-
-def get_app() -> FastAPI:
-    _app = FastAPI()
-
-    _app.title = "Django Deployer"
-    _app.description = "User Backend"
-
-    prefix = "/api/v1"
-
-    _app.include_router(router, prefix=prefix)
-
-    return _app
+import env
+from schemas import HealthCheck, DeployRequest, DeployResponse
 
 
-app = get_app()
+app = FastAPI()
+app.title = "Django Deployer"
+app.description = "User Service"
 
-# Health Check Route
 
-
-class HealthCheck(BaseModel):
-    message: str
+async def get_redis():
+    r = await redis.from_url(
+        f"redis://{env.REDIS_HOST}",
+        db=env.REDIS_DB_NAME,
+        username=env.REDIS_USERNAME,
+        password=env.REDIS_PASSWORD
+    )
+    try:
+        yield r
+    except Exception as _:
+        await r.close()
 
 
 @app.get("/health-check/", status_code=status.HTTP_200_OK, response_model=HealthCheck)
 async def health_check():
     return HealthCheck(message="User backend is up & running!")
+
+
+@app.post(path="/api/v1/deploy/", response_model=DeployResponse, status_code=status.HTTP_200_OK)
+async def deploy(deploy_request: DeployRequest, _redis: Annotated[redis.Redis, Depends(get_redis)]):
+    _id = str(uuid.uuid4())
+    data = {
+        "email": deploy_request.email,
+        "plan": deploy_request.plan,
+        "instance": deploy_request.instance,
+        "is_deployed": False
+    }
+
+    # Store deployment data in DB
+    await _redis.hset(_id, mapping=data)
+    return DeployResponse(message="Deployment request received")

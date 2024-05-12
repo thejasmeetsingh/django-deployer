@@ -7,5 +7,9 @@ class DeployRequest(BaseModel):
     instance: str
 
 
+class HealthCheck(BaseModel):
+    message: str
+
+
 class DeployResponse(BaseModel):
     message: str
