@@ -1,4 +1,5 @@
 import uuid
+import json
 import traceback
 from typing import Annotated
 
@@ -58,16 +59,16 @@ async def get_plans(_redis: Annotated[redis.Redis, Depends(get_redis)]):
 @app.post(path="/api/v1/deploy/", response_model=DeployResponse, status_code=status.HTTP_200_OK)
 async def deploy(deploy_request: DeployRequest, _redis: Annotated[redis.Redis, Depends(get_redis)]):
     try:
-        _id = str(uuid.uuid4())
-        data = {
+        key = str(uuid.uuid4())
+        data = json.dumps({
             "email": deploy_request.email,
             "plan": deploy_request.plan,
             "instance": deploy_request.instance,
             "is_deployed": False
-        }
+        })
 
         # Store deployment data in DB
-        await _redis.hset(_id, mapping=data)
+        await _redis.set(key, data)
         return DeployResponse(message="Deployment request received")
 
     except Exception as e:
