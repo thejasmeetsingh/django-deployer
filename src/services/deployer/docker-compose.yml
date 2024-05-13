@@ -1,0 +1,15 @@
+services:
+  deployer:
+    build: .
+    container_name: deployer
+    command: sh -c "celery -A main worker -l INFO"
+    volumes:
+      - .:/code
+    env_file:
+      - .env
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    external: true
