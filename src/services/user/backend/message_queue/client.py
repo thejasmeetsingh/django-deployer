@@ -6,24 +6,10 @@ import env
 from logger import get_logger
 
 
-REDIS_CONN: redis.Redis | None = None
 logger = get_logger(__name__)
 
 
-async def on_response(ch, _, __, body):
-    logger.info("Response: %s", body)
-
-    global REDIS_CONN
-    plans: list[dict[str, str]] = json.loads(body)
-
-    logger.info("Saved plans in redis for future use")
-    await REDIS_CONN.set("plans", plans, ex=1800)
-    await get_plans(REDIS_CONN)
-
-    ch.close()
-
-
-async def fetch_plans():
+def fetch_plans():
     credentials = pika.PlainCredentials(
         env.RABBITMQ_USERNAME,
         env.RABBITMQ_PASSWORD
@@ -37,12 +23,6 @@ async def fetch_plans():
     with pika.BlockingConnection(conn_params) as conn:
         channel = conn.channel()
 
-        channel.basic_consume(
-            env.ADMIN_CLIENT_QUEUE,
-            auto_ack=True,
-            on_message_callback=await on_response
-        )
-
         channel.basic_publish(
             exchange="",
             routing_key=env.ADMIN_SERVER_QUEUE,
@@ -50,19 +30,43 @@ async def fetch_plans():
             properties=pika.BasicProperties(
                 reply_to=env.ADMIN_CLIENT_QUEUE,
                 delivery_mode=pika.DeliveryMode.Persistent
-                )
+            )
         )
 
-        channel.start_consuming()
+        method_frame, header_frame, body = channel.basic_get(
+            env.ADMIN_CLIENT_QUEUE,
+            auto_ack=True,
+        )
+
+        if method_frame:
+            logger.info({
+                "method_frame": method_frame,
+                "header_frame": header_frame,
+                "body": body
+            })
+
+            channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+
+            return body
+
+        channel.close()
 
 
 async def get_plans(_redis: redis.Redis):
-    plans: list[dict[str, str]] | None = await _redis.get("plans")
+    key = "plans"
+
+    plans: bytes | None = await _redis.get(key)
     if plans:
-        return plans
+        return json.loads(plans)
 
     logger.info("Plan data not found, Fetching data from admin service")
-    global REDIS_CONN
-    REDIS_CONN = _redis
 
-    await fetch_plans()
+    plans: bytes | None = fetch_plans()
+
+    if plans:
+        logger.info("Plans saved in redis, For future usage")
+        await _redis.set(key, plans, ex=1800)
+        return json.loads(plans)
+
+    logger.error("Plans data not found")
+    return []

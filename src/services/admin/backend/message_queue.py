@@ -64,6 +64,8 @@ if __name__ == "__main__":
         channel.queue_declare(queue=env.SERVER_QUEUE, durable=True)
         channel.queue_declare(queue=env.CLIENT_QUEUE, durable=True)
 
+        channel.confirm_delivery()
+
         channel.basic_consume(queue=env.SERVER_QUEUE,
                               on_message_callback=on_request)
 

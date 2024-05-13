@@ -3,12 +3,11 @@ services:
     container_name: redis_service
     restart: always
     image: redis:7.2.3-alpine
-    environment:
-      REDIS_ARGS: "--requirepass 1234 --user redis_db_user on >1234 ~* allcommands --user default off nopass nocommands"
+    command: sh -c "redis-server --appendonly yes --requirepass 1234"
     volumes:
       - redis-db:/data
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      test: ["CMD-SHELL", "redis-cli -a 1234 ping | grep PONG"]
       interval: 10s
       timeout: 5s
       retries: 5

@@ -23,7 +23,7 @@ async def get_redis():
         host=env.REDIS_HOST,
         username=env.REDIS_USERNAME,
         password=env.REDIS_PASSWORD,
-        db=env.REDIS_DB_NAME,
+        db=env.REDIS_DB,
         decode_responses=True
     )
     try:
@@ -51,7 +51,8 @@ async def get_plans(_redis: Annotated[redis.Redis, Depends(get_redis)]):
             "traceback": traceback.format_exc()
         })
 
-        raise HTTPException(detail="Something went wrong", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR) from e
+        raise HTTPException(detail="Something went wrong",
+                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR) from e
 
 
 @app.post(path="/api/v1/deploy/", response_model=DeployResponse, status_code=status.HTTP_200_OK)
@@ -68,11 +69,12 @@ async def deploy(deploy_request: DeployRequest, _redis: Annotated[redis.Redis, D
         # Store deployment data in DB
         await _redis.hset(_id, mapping=data)
         return DeployResponse(message="Deployment request received")
-    
+
     except Exception as e:
         logger.error({
             "error": e,
             "traceback": traceback.format_exc()
         })
 
-        raise HTTPException(detail="Something went wrong", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR) from e
+        raise HTTPException(detail="Something went wrong",
+                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR) from e
