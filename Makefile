@@ -18,10 +18,10 @@ start-services:
 
 stop-services:
 	# Admin App
-	docker-compose -f src/services/admin/docker-compose.yml down
+	docker-compose -f src/services/admin/docker-compose.yml down --remove-orphans
 
 	# User App
-	docker-compose -f src/services/user/docker-compose.yml down
+	docker-compose -f src/services/user/docker-compose.yml down --remove-orphans
 
 	# RabbitMQ
 	docker container stop rmq_service
