@@ -1,2 +1,6 @@
-def deploy(_id: str, plan: str, instance: str) -> None:
-    print(_id, plan, instance)
+def send_email(email: str) -> None:
+    pass
+
+
+def deploy(email: str, plan: str, instance: str) -> None:
+    pass

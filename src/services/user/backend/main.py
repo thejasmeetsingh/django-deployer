@@ -74,7 +74,7 @@ async def deploy(deploy_request: DeployRequest, _redis: Annotated[redis.Redis, D
         result = celery_app.send_task(
             name="tasks.deploy",
             kwargs={
-                "_id": key,
+                "email": deploy_request.email,
                 "plan": deploy_request.plan,
                 "instance": deploy_request.instance
             }

@@ -1,7 +1,7 @@
 import os
 from celery import Celery
 
-from tasks import deploy
+from tasks import deploy, send_email
 
 
 app = Celery(
@@ -12,3 +12,4 @@ app = Celery(
 app.conf.task_default_queue = os.getenv("CELERY_DEFAULT_QUEUE")
 
 app.task(deploy)
+app.task(send_email)
