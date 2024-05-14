@@ -9,7 +9,8 @@ from fastapi import FastAPI, Depends, HTTPException, status
 import env
 from logger import get_logger
 from schemas import HealthCheck, DeployRequest, DeployResponse, PlanResponse
-from message_queue.client import get_plans as get_cached_plans
+from message_queue.admin import get_plans as get_cached_plans
+from message_queue.deployer import app as celery_app
 
 
 app = FastAPI()
@@ -64,11 +65,23 @@ async def deploy(deploy_request: DeployRequest, _redis: Annotated[redis.Redis, D
             "email": deploy_request.email,
             "plan": deploy_request.plan,
             "instance": deploy_request.instance,
-            "is_deployed": False
         })
 
         # Store deployment data in DB
         await _redis.set(key, data)
+
+        # Send deployment request to deployer service
+        result = celery_app.send_task(
+            name="tasks.deploy",
+            kwargs={
+                "_id": key,
+                "plan": deploy_request.plan,
+                "instance": deploy_request.instance
+            }
+        )
+
+        logger.info("Deployment request sent: %s", result)
+
         return DeployResponse(message="Deployment request received")
 
     except Exception as e:

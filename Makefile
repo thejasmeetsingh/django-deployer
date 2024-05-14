@@ -11,6 +11,9 @@ start-services:
 	# User App
 	docker-compose -f src/services/user/docker-compose.yml up -d
 	
+	# Deployer App
+	docker-compose -f src/services/deployer/docker-compose.yml up -d
+
 	# API Gateway
 	docker run --name api_gateway -d -p 8000:8000 \
 		-v ./src/api_gateway/nginx.conf:/etc/nginx/conf.d/default.conf \
@@ -22,6 +25,9 @@ stop-services:
 
 	# User App
 	docker-compose -f src/services/user/docker-compose.yml down --remove-orphans
+
+	# Deployer App
+	docker-compose -f src/services/deployer/docker-compose.yml down --remove-orphans
 
 	# RabbitMQ
 	docker container stop rmq_service
