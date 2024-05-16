@@ -1,4 +1,3 @@
-import os
 from urllib.request import urlopen
 from io import BytesIO
 from zipfile import ZipFile
@@ -9,23 +8,11 @@ def send_email(email: str) -> None:
 
 
 def download_repository(_id: str, repo_link: str):
-    project_name = repo_link.split("/")[-1]
-
     # Download repository as a zipfile from the given repo link
     with urlopen(repo_link + "/archive/refs/heads/master.zip") as response:
-
         # Open it as ZipFile object
         with ZipFile(file=BytesIO(response.read()), mode="a") as zipfile:
-
-            # Add boilerplate files to codebase
-            boilerplate_path = "./boilerplate"
-
-            for filename in os.listdir(boilerplate_path):
-                zipfile.write(
-                    filename=boilerplate_path + f"/{filename}",
-                    arcname=f"{project_name}-master/{filename}"
-                )
-
+            # Extract codebase
             zipfile.extractall(path=f"./codebase/{_id}")
 
 
