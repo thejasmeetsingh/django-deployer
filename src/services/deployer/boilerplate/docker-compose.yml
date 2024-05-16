@@ -2,7 +2,7 @@ services:
   app:
     build: .
     container_name: app
-    command: sh -c "gunicorn eth_swap_indexer.wsgi"
+    command: sh -c "gunicorn $MAIN_APP.wsgi"
     volumes:
       - .:/code
     env_file:
