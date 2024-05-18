@@ -39,7 +39,7 @@ def get_main_app_name(path: str) -> str | None:
     """
 
     for root, _, files in os.walk(path):
-        if "manage.py" in files:
+        if "wsgi.py" in files:
             return os.path.basename(root)
     return None
 
@@ -59,12 +59,12 @@ def copy_boilerplate_files(path: str, is_docker_configured: bool) -> None:
                      f"{path}/{filename}")
 
 
-def process_and_validate_files(_id: str) -> bool:
+def process_and_validate_files(_id: str, project_name: str) -> bool:
     """
     Validate the codebase files and process them for ease of deployment
     """
 
-    codebase_path = f"{CODEBASE_ROOT_PATH}/{_id}"
+    codebase_path = f"{CODEBASE_ROOT_PATH}/{_id}/{project_name}"
     is_docker_configured = False
 
     for filename in os.listdir(codebase_path):
@@ -81,10 +81,10 @@ def process_and_validate_files(_id: str) -> bool:
 
     if not main_app:
         raise FileNotFoundError(
-            "manage.py not found in the project. Cannot proceed further")
+            "WSGI file not found in the project. Cannot proceed further")
 
     with open(f"{codebase_path}/.env", "a", encoding="utf-8") as fp:
-        fp.write(f"MAIN_APP={main_app}")
+        fp.write(f"\nMAIN_APP={main_app}")
 
     return False
 
@@ -94,9 +94,10 @@ def deploy(repo_link: str, _id: str, email: str, plan: str, instance: str) -> No
     Given a public repo link, Process the codebase and deploy it onto the cloud
     """
 
+    project_name = f"{repo_link.split('/')[-1]}-master"
     download_repository(_id, repo_link)
 
     try:
-        process_and_validate_files(_id)
+        process_and_validate_files(_id, project_name)
     except FileNotFoundError as e:
         logger.error(e)
