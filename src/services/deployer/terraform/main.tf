@@ -20,26 +20,30 @@ resource "aws_default_subnet" "default_subnet" {
 resource "aws_security_group" "deployer_sg" {
   name   = "Deployer Security Group"
   vpc_id = aws_default_vpc.default_vpc.id
+}
 
-  egress = [{
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }]
+resource "aws_vpc_security_group_egress_rule" "deployer_sg_outbound" {
+  security_group_id = aws_security_group.deployer_sg.id
+  ip_protocol       = "-1"
+  cidr_ipv4         = "0.0.0.0/0"
+}
 
-  ingress = [
-    {
-      from_port   = 80
-      to_port     = 80
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    },
-    {
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  ]
+resource "aws_vpc_security_group_ingress_rule" "deployer_sg_inbound_http" {
+  description       = "HTTP Inbound Rule"
+  security_group_id = aws_security_group.deployer_sg.id
+  from_port         = 80
+  to_port           = 80
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "deployer_sg_inbound_https" {
+  description       = "HTTPS Inbound Rule"
+  security_group_id = aws_security_group.deployer_sg.id
+  from_port         = 443
+  to_port           = 443
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
 }
 
 resource "aws_instance" "deployer_vm" {
@@ -47,7 +51,7 @@ resource "aws_instance" "deployer_vm" {
   instance_type               = var.instance_type
   associate_public_ip_address = true
   subnet_id                   = aws_default_subnet.default_subnet.id
-  security_groups             = [aws_security_group.deployer_sg.name]
+  vpc_security_group_ids      = [aws_security_group.deployer_sg.id]
 
   ebs_block_device {
     device_name = "/dev/sda1"
