@@ -1,7 +1,7 @@
 #!/bin/bash
 
-PROJECT_PATH=$1
-PROJECT_NAME=$2
+PROJECT_PATH=${arg1}
+PROJECT_NAME=${arg2}
 
 # Update software repositories
 sudo apt update -y && apt upgrade -y
@@ -27,3 +27,6 @@ sudo cp -r $PROJECT_PATH $PROJECT_NAME
 # Run the project
 cd $PROJECT_NAME
 docker compose up -d
+docker run --name proxy -d -p 8000:8000 \
+		-v ./nginx.conf \
+		--network shared-network nginx:1.25.4-alpine
