@@ -12,3 +12,12 @@ data "aws_ami" "ubuntu_ami" {
     values = ["hvm"]
   }
 }
+
+data "template_file" "instance_init" {
+  template = file("../instance.init.sh")
+
+  vars = {
+    arg1 = var.project_path
+    arg2 = var.project_name
+  }
+}

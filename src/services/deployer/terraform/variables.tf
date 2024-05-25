@@ -9,3 +9,11 @@ variable "az" {
   type        = string
   default     = "ap-south-1b"
 }
+
+variable "project_path" {
+  type = string
+}
+
+variable "project_name" {
+  type = string
+}

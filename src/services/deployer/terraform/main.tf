@@ -52,6 +52,7 @@ resource "aws_instance" "deployer_vm" {
   associate_public_ip_address = true
   subnet_id                   = aws_default_subnet.default_subnet.id
   vpc_security_group_ids      = [aws_security_group.deployer_sg.id]
+  user_data                   = data.template_file.instance_init.rendered
 
   ebs_block_device {
     device_name = "/dev/sda1"
