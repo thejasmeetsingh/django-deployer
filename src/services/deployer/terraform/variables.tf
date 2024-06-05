@@ -10,7 +10,7 @@ variable "az" {
   default     = "ap-south-1b"
 }
 
-variable "project_path" {
+variable "project_link" {
   type = string
 }
 

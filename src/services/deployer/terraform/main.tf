@@ -18,7 +18,7 @@ resource "aws_default_subnet" "default_subnet" {
 }
 
 resource "aws_security_group" "deployer_sg" {
-  name   = "Deployer Security Group"
+  name   = format("%s Security Group", var.project_name)
   vpc_id = aws_default_vpc.default_vpc.id
 }
 
@@ -61,10 +61,19 @@ resource "aws_instance" "deployer_vm" {
   }
 
   tags = {
-    Name = "Deployer VM"
+    Name = format("%s VM", var.project_name)
   }
 }
 
 resource "aws_eip" "deployer_eip" {
   instance = aws_instance.deployer_vm.id
+
+  tags = {
+    Name = format("%s VM Elastic IP", var.project_name)
+  }
+}
+
+output "instance_ip" {
+  description = "Instance Elastic IP"
+  value       = aws_eip.deployer_eip.public_ip
 }

@@ -17,7 +17,7 @@ data "template_file" "instance_init" {
   template = file("../instance.init.sh")
 
   vars = {
-    arg1 = var.project_path
+    arg1 = var.project_link
     arg2 = var.project_name
   }
 }
