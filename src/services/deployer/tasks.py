@@ -8,13 +8,15 @@ from utils import (
     get_s3_key,
     download_repository,
     process_and_validate_files,
-    upload_codebase_s3
+    upload_codebase_s3,
+    get_instance_ip_from_json
 )
 
 
 logger = get_logger(__name__)
 
 CODEBASE_ROOT_PATH = "./codebase"
+INSTANCE_OUTPUT_PATH = "./terraform/instance_ip.json"
 
 
 def send_email(email: str) -> None:
@@ -33,7 +35,6 @@ def deploy(repo_link: str, _id: str, email: str, plan: str, instance: str) -> No
     download_path = f"{CODEBASE_ROOT_PATH}/{_id}"
     codebase_path = f"{download_path}/{project_name}-master"
 
-    instance_init_file = "./instance.init.sh"
     aws_bucket = os.getenv("AWS_BUCKET_NAME")
     s3_key = get_s3_key(project_name)
 
@@ -42,12 +43,27 @@ def deploy(repo_link: str, _id: str, email: str, plan: str, instance: str) -> No
     try:
         process_and_validate_files(codebase_path)
         upload_codebase_s3(codebase_path, s3_key, aws_bucket)
-        print(f'https://{aws_bucket.lower()}.s3.amazonaws.com/{s3_key}')
     except (FileNotFoundError, ClientError) as e:
         logger.error(e)
         return
 
-    output = subprocess.run([instance_init_file, codebase_path,
-                             project_name], check=False, capture_output=True)
+    output = subprocess.run(
+        [
+            "./terraform.sh",
+            project_name,
+            f'https://{aws_bucket.lower()}.s3.amazonaws.com/{s3_key}',
+            INSTANCE_OUTPUT_PATH.split("/")[-1]
+        ],
+        check=False,
+        stdout=subprocess.PIPE,
+        text=True
+    )
 
-    print(output.stdout.decode())
+    logger.info(output.stdout)
+
+    if output.returncode != 0:
+        return
+
+    instance_ip = get_instance_ip_from_json(INSTANCE_OUTPUT_PATH)
+
+    logger.info("Instance IP: %s", instance_ip)
