@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 
 from botocore.exceptions import ClientError
@@ -47,6 +48,10 @@ def deploy(repo_link: str, _id: str, email: str, plan: str, instance: str) -> No
         logger.error(e)
         return
 
+    # Remove the codebase from local
+    shutil.rmtree(download_path)
+
+    # Setup the infrastructure for deployment
     output = subprocess.run(
         [
             "./terraform.sh",
@@ -65,5 +70,7 @@ def deploy(repo_link: str, _id: str, email: str, plan: str, instance: str) -> No
         return
 
     instance_ip = get_instance_ip_from_json(INSTANCE_OUTPUT_PATH)
+
+    os.remove(INSTANCE_OUTPUT_PATH)
 
     logger.info("Instance IP: %s", instance_ip)
