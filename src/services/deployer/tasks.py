@@ -65,45 +65,56 @@ def deploy(repo_link: str, _id: str, email: str, plan: str, instance: str) -> No
     Given a public repo link, Process the codebase and deploy it onto the cloud
     """
 
-    project_name = repo_link.split('/')[-1]
-    download_path = f"{CODEBASE_ROOT_PATH}/{_id}"
-    codebase_path = f"{download_path}/{project_name}-master"
-
-    aws_bucket = os.getenv("AWS_BUCKET_NAME")
-    s3_key = get_s3_key(project_name)
-
-    download_repository(_id, repo_link, download_path)
-
     try:
+        project_name = repo_link.split('/')[-1]
+        download_path = f"{CODEBASE_ROOT_PATH}/{_id}"
+        codebase_path = f"{download_path}/{project_name}-master"
+
+        aws_bucket = os.getenv("AWS_BUCKET_NAME")
+        s3_key = get_s3_key(project_name)
+
+        # Code processing
+        download_repository(_id, repo_link, download_path)
         process_and_validate_files(codebase_path)
         upload_codebase_s3(codebase_path, s3_key, aws_bucket)
-    except (FileNotFoundError, ClientError) as e:
+
+        # Remove the codebase from local
+        shutil.rmtree(download_path)
+
+        # Setup the infrastructure for deployment
+        output = subprocess.run(
+            [
+                "./terraform.sh",
+                project_name,
+                f'https://{aws_bucket.lower()}.s3.amazonaws.com/{s3_key}',
+                INSTANCE_OUTPUT_PATH.split("/")[-1]
+            ],
+            check=False,
+            stdout=subprocess.PIPE,
+            text=True
+        )
+
+        logger.info(output.stdout)
+
+        if output.returncode != 0:
+            raise subprocess.SubprocessError()
+
+        instance_dns = get_instance_dns_from_json(INSTANCE_OUTPUT_PATH)
+
+        os.remove(INSTANCE_OUTPUT_PATH)
+
+        logger.info("Instance Public IPv4 DNS: %s", instance_dns)
+
+        send_email.apply_async(kwargs={
+            "subject": "Deployment Success🎉",
+            "body": f"Your project deployed successfully.\n\nYou can access your project using this URL: {instance_dns}",
+            "recipient": email
+        })
+    except Exception as e:
         logger.error(e)
-        return
 
-    # Remove the codebase from local
-    shutil.rmtree(download_path)
-
-    # Setup the infrastructure for deployment
-    output = subprocess.run(
-        [
-            "./terraform.sh",
-            project_name,
-            f'https://{aws_bucket.lower()}.s3.amazonaws.com/{s3_key}',
-            INSTANCE_OUTPUT_PATH.split("/")[-1]
-        ],
-        check=False,
-        stdout=subprocess.PIPE,
-        text=True
-    )
-
-    logger.info(output.stdout)
-
-    if output.returncode != 0:
-        return
-
-    instance_dns = get_instance_dns_from_json(INSTANCE_OUTPUT_PATH)
-
-    os.remove(INSTANCE_OUTPUT_PATH)
-
-    logger.info("Instance Public IPv4 DNS: %s", instance_dns)
+        send_email.apply_async(kwargs={
+            "subject": "Deployment Failed😞",
+            "body": "Due to an internal error, Your project deployment as failed.",
+            "recipient": email
+        })
