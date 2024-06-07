@@ -60,7 +60,7 @@ def send_email(subject: str, body: str, recipient: str) -> None:
         logger.error(e)
 
 
-def deploy(repo_link: str, _id: str, email: str, plan: str, instance: str) -> None:
+def deploy(repo_link: str, _id: str, email: str, instance: str) -> None:
     """
     Given a public repo link, Process the codebase and deploy it onto the cloud
     """
@@ -85,6 +85,7 @@ def deploy(repo_link: str, _id: str, email: str, plan: str, instance: str) -> No
         output = subprocess.run(
             [
                 "./terraform.sh",
+                instance,
                 project_name,
                 f'https://{aws_bucket.lower()}.s3.amazonaws.com/{s3_key}',
                 INSTANCE_OUTPUT_PATH.split("/")[-1]
@@ -94,7 +95,7 @@ def deploy(repo_link: str, _id: str, email: str, plan: str, instance: str) -> No
             text=True
         )
 
-        logger.info(output.stdout)
+        logger.info("Infrastructure setup successfully")
 
         if output.returncode != 0:
             raise subprocess.SubprocessError()
@@ -107,9 +108,10 @@ def deploy(repo_link: str, _id: str, email: str, plan: str, instance: str) -> No
 
         send_email.apply_async(kwargs={
             "subject": "Deployment Success🎉",
-            "body": f"Your project deployed successfully.\n\nYou can access your project using this URL: {instance_dns}",
+            "body": f"Your project deployed successfully.\n\nYou can access your project using this URL: http://{instance_dns}",
             "recipient": email
         })
+
     except Exception as e:
         logger.error(e)
 
