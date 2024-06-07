@@ -32,7 +32,7 @@ def download_repository(_id: str, repo_link: str, path: str) -> None:
 
 def get_main_app_name(path: str) -> str | None:
     """
-    Get the main app name where the manage.py file resides
+    Get the main app name where the wsgi.py file resides
     """
 
     for root, _, files in os.walk(path):

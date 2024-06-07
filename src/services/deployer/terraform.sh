@@ -17,5 +17,5 @@ terraform apply  -var="instance_type=$INSTANCE_TYPE" -var="project_name=$PROJECT
 terraform output -json > $INSTANCE_OUTPUT_FILENAME
 
 # Remove the terraform state data, To avoid conflict
-# rm -r .terraform*
-# rm terraform*
+rm -r .terraform*
+rm terraform*
