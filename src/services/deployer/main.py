@@ -102,10 +102,10 @@ def deploy(repo_link: str, _id: str, email: str, instance: str) -> None:
             text=True
         )
 
-        logger.info("Infrastructure setup successfully")
-
         if output.returncode != 0:
             raise subprocess.SubprocessError()
+
+        logger.info("Infrastructure setup successfully")
 
         instance_dns = get_instance_dns_from_json(instance_output_path)
 
