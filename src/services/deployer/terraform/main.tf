@@ -37,15 +37,6 @@ resource "aws_vpc_security_group_ingress_rule" "deployer_sg_inbound_http" {
   cidr_ipv4         = "0.0.0.0/0"
 }
 
-resource "aws_vpc_security_group_ingress_rule" "deployer_sg_inbound_https" {
-  description       = "HTTPS Inbound Rule"
-  security_group_id = aws_security_group.deployer_sg.id
-  from_port         = 443
-  to_port           = 443
-  ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
-}
-
 resource "aws_instance" "deployer_vm" {
   ami                         = data.aws_ami.ubuntu_ami.id
   instance_type               = var.instance_type
