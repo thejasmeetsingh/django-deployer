@@ -123,11 +123,11 @@ def upload_codebase_s3(codebase_path: str, s3_key: str, aws_bucket: str) -> None
     logger.info("File uploaded to s3 successfully")
 
 
-def get_instance_ip_from_json(path: str) -> str | None:
+def get_instance_dns_from_json(path: str) -> str | None:
     """
-    Given the terraform output file path, Retrieve the instance IP
+    Given the terraform output file path, Retrieve the instance public IPv4 DNS
     """
 
     with open(path, "r", encoding="utf-8") as fp:
         data = json.load(fp)
-        return data["instance_ip"].get("value")
+        return data["instance_dns"].get("value")

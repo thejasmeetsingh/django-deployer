@@ -2,7 +2,8 @@ import os
 import shutil
 import subprocess
 
-from botocore.exceptions import ClientError
+import boto3
+from botocore.exceptions import ClientError, NoCredentialsError, PartialCredentialsError
 
 from logger import get_logger
 from utils import (
@@ -10,21 +11,53 @@ from utils import (
     download_repository,
     process_and_validate_files,
     upload_codebase_s3,
-    get_instance_ip_from_json
+    get_instance_dns_from_json
 )
 
 
 logger = get_logger(__name__)
 
 CODEBASE_ROOT_PATH = "./codebase"
-INSTANCE_OUTPUT_PATH = "./terraform/instance_ip.json"
+INSTANCE_OUTPUT_PATH = "./terraform/instance_data.json"
 
 
-def send_email(email: str) -> None:
+def send_email(subject: str, body: str, recipient: str) -> None:
     """
     Send email to user regarding their application deployment status
     """
-    pass
+
+    ses = boto3.client("ses")
+    sender = os.getenv("AWS_SES_SENDER")
+
+    try:
+        response = ses.send_email(
+            Destination={
+                'ToAddresses': [
+                    recipient,
+                ],
+            },
+            Message={
+                'Body': {
+                    'Text': {
+                        "Data": body,
+                        "Charset": "UTF-8"
+                    },
+                },
+                'Subject': {
+                    'Charset': 'UTF-8',
+                    'Data': subject,
+                },
+            },
+            Source=sender,
+        )
+
+        logger.info({
+            "msg": "Email sent successfully",
+            "response": response
+        })
+
+    except (ClientError, NoCredentialsError, PartialCredentialsError) as e:
+        logger.error(e)
 
 
 def deploy(repo_link: str, _id: str, email: str, plan: str, instance: str) -> None:
@@ -69,8 +102,8 @@ def deploy(repo_link: str, _id: str, email: str, plan: str, instance: str) -> No
     if output.returncode != 0:
         return
 
-    instance_ip = get_instance_ip_from_json(INSTANCE_OUTPUT_PATH)
+    instance_dns = get_instance_dns_from_json(INSTANCE_OUTPUT_PATH)
 
     os.remove(INSTANCE_OUTPUT_PATH)
 
-    logger.info("Instance IP: %s", instance_ip)
+    logger.info("Instance Public IPv4 DNS: %s", instance_dns)
