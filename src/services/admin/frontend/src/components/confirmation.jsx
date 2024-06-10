@@ -1,9 +1,9 @@
-export default function Confirmation(message) {
+export default function Confirmation({ message, onConfirm, onCancel }) {
   return (
     <div>
-      <p>Are you sure you want to {message}</p>
-      <button>Yes</button>
-      <button>No</button>
+      <p>{message}</p>
+      <button onClick={onConfirm}>Yes</button>
+      <button onClick={onCancel}>No</button>
     </div>
   );
 }

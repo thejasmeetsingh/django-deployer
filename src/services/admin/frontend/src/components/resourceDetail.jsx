@@ -1,7 +1,7 @@
-import instanceDetail from "./instanceDetail";
-import planDetail from "./planDetail";
+import instanceDetail from "./InstanceDetail";
+import planDetail from "./PlanDetail";
 
-export default function ResourceDetail(type) {
+export default function ResourceDetail({ resource, type }) {
   if (type === "plan") {
     return <planDetail />;
   }
