@@ -1,4 +1,4 @@
-import ResourceList from "../components/resourceList";
+import ResourceList from "../components/ResourceList";
 import HomePage from "./HomePage";
 
 export default function InstancePage({ instances }) {

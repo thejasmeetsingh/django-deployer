@@ -1,4 +1,4 @@
-import Confirmation from "../components/confirmation";
+import Confirmation from "../components/Confirmation";
 
 export default function DeletePage({ resource, type }) {
   const onConfirm = () => {
