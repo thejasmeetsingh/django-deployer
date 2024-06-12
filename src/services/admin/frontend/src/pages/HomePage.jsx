@@ -4,10 +4,10 @@ export default function HomePage() {
   return (
     <div>
       <div>
-        <Link to="/plans">Plans</Link>
+        <Link to="/plan">Plans</Link>
       </div>
       <div>
-        <Link to="/instances">Instances</Link>
+        <Link to="/instance">Instances</Link>
       </div>
       <button>
         <Link to="/logout">Logout</Link>

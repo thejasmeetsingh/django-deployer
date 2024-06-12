@@ -1,11 +1,17 @@
+import { useEffect } from "react";
 import ResourceList from "../components/ResourceList";
-import HomePage from "./HomePage";
+import useInstanceContext from "../hooks/use-instance-context";
 
-export default function InstancePage({ instances }) {
+export default function InstancePage() {
+  const { instances, fetchInstances } = useInstanceContext();
+
+  useEffect(() => {
+    fetchInstances();
+  }, []);
+
   return (
     <div>
-      <HomePage />
-      <ResourceList resources={instances} baseURL="instances" />
+      <ResourceList resources={instances} baseURL="instance" />
     </div>
   );
 }

@@ -1,11 +1,17 @@
+import { useEffect } from "react";
 import ResourceList from "../components/ResourceList";
-import HomePage from "./HomePage";
+import usePlanContext from "../hooks/use-plan-context";
 
-export default function PlanPage({ plans }) {
+export default function PlanPage() {
+  const { plans, fetchPlans } = usePlanContext();
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
   return (
     <div>
-      <HomePage />
-      <ResourceList resources={plans} baseURL="plans" />
+      <ResourceList resources={plans} baseURL="plan" />
     </div>
   );
 }
