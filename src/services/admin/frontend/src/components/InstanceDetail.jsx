@@ -1,18 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import useInstanceContext from "../hooks/use-instance-context";
 
-export default function instanceDetail() {
-  const [instance, setInstance] = useState("");
+export default function InstanceDetail() {
+  const [instanceName, setInstanceName] = useState("");
+  const { id } = useParams();
+  const { getInstanceByID } = useInstanceContext();
+
+  useEffect(() => {
+    async function fetchData() {
+      const instance = await getInstanceByID(id);
+      if (instance) {
+        setInstanceName(instance.name);
+      }
+    }
+    fetchData();
+  }, []);
 
   return (
     <form>
-      <label htmlFor="instance">instance:</label>
+      <label htmlFor="instanceName">instance:</label>
       <input
-        name="instance"
-        id="instance"
+        name="instanceName"
+        id="instanceName"
         type="text"
-        value={instance}
+        value={instanceName}
         onChange={(e) => {
-          setInstance(e.target.value);
+          setInstanceName(e.target.value);
         }}
       />
       <button>Save</button>
