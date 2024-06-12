@@ -14,6 +14,10 @@ function InstanceProvider({ children }) {
     ]);
   };
 
+  const getInstanceByID = async (id) => {
+    return { id: 1, name: "t2.micro" };
+  };
+
   const createInstance = async (name) => {
     setInstance([...instances, { id: instances.length + 1, name }]);
   };
@@ -43,6 +47,7 @@ function InstanceProvider({ children }) {
         instances,
         fetchInstances,
         createInstance,
+        getInstanceByID,
         editInstance,
         deleteInstance,
       }}

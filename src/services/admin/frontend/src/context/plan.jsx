@@ -18,6 +18,10 @@ function PlanProvider({ children }) {
     setPlan([...plans, { id: plans.length + 1, name }]);
   };
 
+  const getPlanByID = async (id) => {
+    return { id: 1, name: "plan 1" };
+  };
+
   const editPlan = async (id, name) => {
     setPlan(
       plans.map((plan, index) => {
@@ -43,6 +47,7 @@ function PlanProvider({ children }) {
         plans,
         fetchPlans,
         createPlan,
+        getPlanByID,
         editPlan,
         deletePlan,
       }}
