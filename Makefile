@@ -1,7 +1,6 @@
-create-network:
-	docker network create -d bridge shared-network
-
 start-services:
+
+	docker network create -d bridge shared-network
 
 	docker run -d --name rmq_service \
 		-e RABBITMQ_DEFAULT_USER=queue_user \
@@ -31,3 +30,5 @@ stop-services:
 	
 	docker container stop api_gateway
 	docker container rm api_gateway
+
+	docker network rm shared-network
