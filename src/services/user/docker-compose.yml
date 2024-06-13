@@ -3,11 +3,11 @@ services:
     container_name: redis_service
     restart: always
     image: redis:7.2.3-alpine
-    command: sh -c "redis-server --appendonly yes --requirepass 1234"
+    command: sh -c "redis-server --appendonly yes --requirepass $REDIS_PASSWORD"
     volumes:
       - redis-db:/data
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli -a 1234 ping | grep PONG"]
+      test: ["CMD-SHELL", "redis-cli -a $REDIS_PASSWORD ping | grep PONG"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -15,16 +15,16 @@ services:
       - internal
 
   users-backend:
-    build: backend/.
+    build: .
     container_name: users_backend
     command: sh -c "gunicorn main:app"
     volumes:
-      - ./backend:/code
+      - .:/code
     depends_on:
       redis-service:
         condition: service_healthy
     env_file:
-      - backend/.env
+      - .env
     networks:
       - internal
       - shared-network

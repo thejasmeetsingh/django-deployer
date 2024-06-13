@@ -6,9 +6,9 @@ services:
     volumes:
       - postgres-db:/var/lib/postgresql/data
     env_file:
-      - backend/.env
+      - .env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d admin_db -U db_user"]
+      test: ["CMD-SHELL", "pg_isready -d $POSTGRES_DB -U $POSTGRES_USER"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -16,31 +16,31 @@ services:
       - internal
 
   admin-backend:
-    build: backend/.
+    build: .
     container_name: admin_backend
     command: sh -c "alembic upgrade head && gunicorn main:app"
     volumes:
-      - ./backend:/code
+      - .:/code
     depends_on:
       admin-db:
         condition: service_healthy
     env_file:
-      - backend/.env
+      - .env
     networks:
       - internal
       - shared-network
 
   admin-rmq:
-    build: backend/.
+    build: .
     container_name: admin_rmq
     command: sh -c "python3 message_queue.py"
     volumes:
-      - ./backend:/code
+      - .:/code
     depends_on:
       admin-db:
         condition: service_healthy
     env_file:
-      - backend/.env
+      - .env
     networks:
       - internal
       - shared-network
