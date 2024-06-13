@@ -16,7 +16,7 @@ Django Deployer is a microservice-based application designed to enable users to 
 ### User Service
 
 - **Plan and Instance Retrieval:** Provides users with a list of plans and instance types to choose from.
-- **Deployment API:** Collects user details, Public GitHub repository link, selected plan, and instance details, then initiates the deployment process.
+- **Deployment API:** Collects user details, **Public** GitHub repository link, selected plan, and instance details, then initiates the deployment process.
 - **RabbitMQ Integration:** Retrieves plan and instance data from the Admin service and queues tasks for the Deployer service using RabbitMQ.
 
 ### Deployer Service
@@ -36,7 +36,7 @@ Django Deployer is a microservice-based application designed to enable users to 
 ### User Operations
 
 - **Select Plan and Instance:** Users can choose from available plans and instance types.
-- **Deploy Application:** Users can initiate the deployment process by providing their email, Public GitHub repository link, and selected plan details.
+- **Deploy Application:** Users can initiate the deployment process by providing their email, **Public** GitHub repository link, and selected plan details.
 - **Interaction via REST API:** Users interact with the User service via REST API calls.
 
 ### Deployer Operations
