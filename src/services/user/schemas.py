@@ -1,10 +1,11 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, HttpUrl
 
 
 class DeployRequest(BaseModel):
     email: EmailStr
     plan: str
     instance: str
+    repo_link: HttpUrl
 
 
 class HealthCheck(BaseModel):

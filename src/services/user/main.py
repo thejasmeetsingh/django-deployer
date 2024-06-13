@@ -61,10 +61,13 @@ async def get_plans(_redis: Annotated[redis.Redis, Depends(get_redis)]):
 async def deploy(deploy_request: DeployRequest, _redis: Annotated[redis.Redis, Depends(get_redis)]):
     try:
         key = str(uuid.uuid4())
+        repo_link = str(deploy_request.repo_link)
+
         data = json.dumps({
             "email": deploy_request.email,
             "plan": deploy_request.plan,
             "instance": deploy_request.instance,
+            "repo_link": repo_link
         })
 
         # Store deployment data in DB
@@ -72,10 +75,11 @@ async def deploy(deploy_request: DeployRequest, _redis: Annotated[redis.Redis, D
 
         # Send deployment request to deployer service
         result = celery_app.send_task(
-            name="tasks.deploy",
+            name="main.deploy",
             kwargs={
+                "repo_link": repo_link,
+                "_id": key,
                 "email": deploy_request.email,
-                "plan": deploy_request.plan,
                 "instance": deploy_request.instance
             }
         )

@@ -56,7 +56,7 @@ def copy_boilerplate_files(path: str, is_docker_configured: bool) -> None:
                      f"{path}/{filename}")
 
 
-def process_and_validate_files(codebase_path: str) -> bool:
+def process_and_validate_files(codebase_path: str) -> None:
     """
     Validate the codebase files and process them for ease of deployment
     """
@@ -82,7 +82,6 @@ def process_and_validate_files(codebase_path: str) -> bool:
         fp.write(f"\nMAIN_APP={main_app}")
 
     logger.info("Codebase file processed successfully")
-    return False
 
 
 def get_s3_key(project_name: str) -> str:
