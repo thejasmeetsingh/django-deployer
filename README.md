@@ -94,4 +94,6 @@ Django Deployer is a microservice-based application designed to enable users to 
 
 4. To stop the services, Run `make down`.
 
+## API Collection
+
 [<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/17396704-892d5957-4c38-42b6-a408-5719aa8632aa?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D17396704-892d5957-4c38-42b6-a408-5719aa8632aa%26entityType%3Dcollection%26workspaceId%3D392b781a-05ab-415b-9eb8-456aca6f3129)
