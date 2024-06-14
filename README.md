@@ -63,7 +63,26 @@ Django Deployer is a microservice-based application designed to enable users to 
 **Few Caveats:**
 
 - The project you need to deployed should be available on GitHub and should be a public repository.
-- The project structure should look like this: ![](./assets/structure.png)
+- The project structure should look like this:
+  ```
+  mysite/
+      manage.py
+      mysite/
+          __init__.py
+          settings.py
+          urls.py
+          asgi.py
+          wsgi.py
+      polls/
+          __init__.py
+          admin.py
+          apps.py
+          migrations/
+              __init__.py
+          models.py
+          tests.py
+          views.py
+  ```
 
 **Start/Stop the services:**
 
