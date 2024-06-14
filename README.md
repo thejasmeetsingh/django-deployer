@@ -60,14 +60,19 @@ Django Deployer is a microservice-based application designed to enable users to 
 - A verified domain should be added on AWS SES.
 - And, S3 Bucket for storing codebase files.
 
+**Few Caveats:**
+
+- The project you need to deployed should be available on GitHub and should be a public repository.
+- The project structure should look like this: ![](./assets/structure.png)
+
 **Start/Stop the services:**
 
 1. Clone the project repository to your local machine.
 
 2. Open a terminal and navigate to the project directory.
 
-3. Run `make start-services` to start all the services.
+3. Run `make up` to start all the services.
 
-4. To stop the services, Run `make stop-services`.
+4. To stop the services, Run `make down`.
 
 [<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/17396704-892d5957-4c38-42b6-a408-5719aa8632aa?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D17396704-892d5957-4c38-42b6-a408-5719aa8632aa%26entityType%3Dcollection%26workspaceId%3D392b781a-05ab-415b-9eb8-456aca6f3129)

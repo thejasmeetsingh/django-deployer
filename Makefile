@@ -1,4 +1,4 @@
-start-services:
+up:
 
 	docker network create -d bridge shared-network
 
@@ -17,7 +17,7 @@ start-services:
 		-v ./src/api_gateway/nginx.conf:/etc/nginx/conf.d/default.conf \
 		--network shared-network nginx:1.25.4-alpine
 
-stop-services:
+down:
 
 	docker-compose -f src/services/admin/docker-compose.yml down --remove-orphans
 
